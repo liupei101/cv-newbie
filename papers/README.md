@@ -4,7 +4,7 @@ The table below presents some papers on recent advances of ConvNets in the compu
 
 | Task | Paper | Description | Note |
 |:-:|:-:|:-:|:-:|
-|  Image Classification  |  [Krizhevsky et al.](http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf)  | ImageNet | ×  |
+|  Image Classification  |  [Krizhevsky et al.](http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf)  | ImageNet | [link](notes/Krizhevsky-AlexNet.md) |
 |   |  [Russakovsky et al.](http://arxiv.org/abs/1409.0575)  | - | ×  |
 |   |  [Szegedy et al.](http://arxiv.org/abs/1409.4842)  | - | × |
 |   |  [Simonyan et al.](http://arxiv.org/abs/1409.1556)  | - | ×  |
