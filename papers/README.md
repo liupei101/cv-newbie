@@ -6,7 +6,7 @@ The table below presents some papers on recent advances of ConvNets in the compu
 |:-:|:-:|:-:|:-:|
 |  Image Classification  |  [Krizhevsky et al.](http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf)  | AlexNet | [link](notes/Krizhevsky-AlexNet.md) |
 |   |  [Russakovsky et al.](http://arxiv.org/abs/1409.0575)  | ImageNet dataset | [link](notes/Russakovsky-ImageNet.md) |
-|   |  [Szegedy et al.](http://arxiv.org/abs/1409.4842)  | - | × |
+|   |  [Szegedy et al.](http://arxiv.org/abs/1409.4842)  | GoogLeNet | [link](notes/szegedy-goolenet.md) |
 |   |  [Simonyan et al.](http://arxiv.org/abs/1409.1556)  | - | ×  |
 |   |  [He et al.](http://arxiv.org/abs/1406.4729)  | - | ×  |
 |   |  [Huang et al.](https://arxiv.org/abs/1608.06993) | - | ×  |

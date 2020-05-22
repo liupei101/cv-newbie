@@ -57,4 +57,9 @@ mAP是多个类别AP的平均值。这个mean的意思是对每个类的AP再求
 
 ### 方法
 
+原文在这个章节主要介绍了从2010-2014年ILSVRC比赛中各个参赛者使用的方法。有兴趣的读者可以进一步了解。
 
+有一句话很让人印象深刻（谈及AlexNet的影响）：
+
+> This was a turning point for large-scale object recognition, when large-scale deep neural net-
+works entered the scene. The **undisputed winner** of both the classification and localization tasks in 2012 was the SuperVision team (`AlexNet`).
