@@ -12,7 +12,7 @@ The table below presents some papers on recent advances of ConvNets in the compu
 |   |  [Huang et al.](https://arxiv.org/abs/1608.06993) | - | ×  |
 |   |  [Hu et al.](https://arxiv.org/abs/1709.01507)  | - | × |
 |   |  [Zoph et al.](https://arxiv.org/abs/1707.07012) | - | × |
-|  Object detection  |  [Girshick et al.](http://arxiv.org/abs/1311.2524) | - | × |
+|  Object detection  |  [Girshick et al.](http://arxiv.org/abs/1311.2524) | R-CNN | [link](notes/rbg-RCNN.md) |
 |   |  [Ren et al.](https://arxiv.org/abs/1506.01497) | - | ×  |
 |   |  [He et al.](https://arxiv.org/abs/1703.06870)  | - | × |
 |  Image segmentation  |  [Long et al](http://arxiv.org/abs/1411.4038)  | - | ×  |
