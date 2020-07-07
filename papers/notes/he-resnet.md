@@ -22,3 +22,46 @@
 
 ![Residual learning: a building block (Shortcut connections)](tools/resnet-1.png)
 
+## 深度残差学习
+
+正如介绍中所指出的，我们需要学习的映射为 H(x)，如果使用多层的非线性层来学习残差，那么这个多层的非线性层映射就可以表示为 f(x) = H(x) - x。经过一些转化（由那个退化问题相关的反直觉现象得到出发），我们需要学习的映射就可以表示为 f(x) + x。这个Shortcut Connections的形式不仅在实际中非常引人注目，而且在我们比较带残差、不带残差网络的时候非常重要。加入这个Shortcut Connections并不影响模型参数，深度，宽度，以及计算消耗（除了多维数组逐个元素相加带来的计算消耗以外）。
+
+当f(x)和x的维度不匹配时，我们可以改写上式为：y = f(x) + Wx。这里的W权值矩阵只在维度不匹配的时候使用。残差函数f的形式可以非常多样，一般为2层或3层的中间层，更多层也是可以的。但是只有一层的中间层时，这个Shortcut Connections就和线性层等价了（y = Wx + x），这就没有任何优势所在了。
+
+## 实验
+
+实验对比的带残差和不带残差的网络结构如下：
+
+![Example network architectures for ImageNet](tools/resnet-2.png)
+
+在残差网络中，当维度不匹配时，我们使用了两种方法：
+1. 填充额外的0以增加维度；
+2. 对x使用1 * 1的卷积来匹配维度。
+
+对这两个方法，当连接跳过了2层时，他们相应的进行stride of 2。（对应图中的/2，作者在解释不带残差网络的模型时：We perform downsampling directly by
+convolutional layers that have a stride of 2）
+
+**实现细节**：
+- 尺寸增强。图片根据短边重新调整了大小，短边的长度在[256, 480]内。
+- 224 * 224 的裁剪随机地从图像中采样，以及采样后的水平翻转图片。同时，图片每个像素点都使用了均值减去。
+- 标准的颜色增强方法也被使用。
+- 我们在每个卷积层之后且激活层之前都采用了BN层。
+- 权值的初始化参见文章[13]，每个mini-batch的大小为256，学习率初始值为0.1，每次error上升，学习率除10。
+- 未使用dropout，优化算法中，权值衰减率为0.0001，动量为0.9。
+
+**ImageNet上的实验结果**：
+
+| Model | plain | ResNet |
+|:-:|:-:|:-:|
+| 18 layers | 27.94 | 27.88 |
+| 34 layers | 28.54 | **25.03** |
+
+上表给出了在ImageNet验证集上的Top-1 error（%，10-crop）。这里的ResNet没有任何的额外参数。下图展示了训练过程。
+
+![Training on ImageNet](tools/resnet-3.png)
+
+文章后文给出了以下讨论：
+- 使用 补0 和 投影 两种不同的Shortcut Connections的模型比较
+- ResNet-50，ResNet-101和ResNet-152在ImageNet数据集上的结果
+- 与SOTA方法的比较：3.57% top-5 error赢得了ILSVRC-2015的冠军
+- CIFAR-10数据集上的实验结果及分析
