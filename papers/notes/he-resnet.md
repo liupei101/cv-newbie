@@ -65,3 +65,11 @@ convolutional layers that have a stride of 2）
 - ResNet-50，ResNet-101和ResNet-152在ImageNet数据集上的结果
 - 与SOTA方法的比较：3.57% top-5 error赢得了ILSVRC-2015的冠军
 - CIFAR-10数据集上的实验结果及分析
+
+## 拓展
+
+文章*K. He, X. Zhang, S. Ren, and J. Sun. Identity mappings in deep residual networks. In ECCV, 2016* 在ResNet的基础上，修改了Identity mappings的结构，达到了更好的实验效果，相关资料如下：
+
+![ResNets Identity mappings variants](tools/resnet-4.png)
+
+对其实现细节及解释感兴趣的朋友可以阅读原文。
