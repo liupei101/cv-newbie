@@ -1,5 +1,7 @@
 # Very Deep Convolutional Networks for Large-Scale Image Recognition
 
+ICLR 2015
+
 ## VGGNet架构
 
 训练阶段，网络的输入是一个固定尺寸224 x 224 的RGB图像。唯一的预处理就是，计算了训练集上的RGB均值，然后图片的每个像素都减去这个均值。我们使用了非常小的3 x 3卷积核，还使用了1 x 1卷积。卷积的stride步长设置为1，padding设置为1。

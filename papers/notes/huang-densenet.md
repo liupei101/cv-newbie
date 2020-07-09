@@ -1,6 +1,6 @@
 # Densely Connected Convolutional Networks
 
-In CVPR 2017 (Best Paper Award)
+CVPR 2017 (Best Paper Award)
 
 ## 介绍
 

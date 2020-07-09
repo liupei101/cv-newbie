@@ -1,5 +1,7 @@
 # Rich feature hierarchies for accurate object detection and semantic segmentation
 
+CVPR 2014
+
 ## 介绍
 
 论文首先介绍了CV领域的发展历史。2012年前，SIFT和HOG发展迅猛，后来慢慢平稳。这一类方法仅仅使用了少量的视觉特征信息。1990年，CNN得到了广泛的使用，但是很快由于SVM的崛起而变得暗淡。直到2012年的ILSVRC比赛中，CNN模型再次引发了大家的广泛关注。这一次的CNN模型在1990年CNN模型基础上，增加了很多技巧，比如RELU激活函数、dropout方法等。

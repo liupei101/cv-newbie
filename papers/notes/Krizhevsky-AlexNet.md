@@ -1,5 +1,7 @@
 # AlexNet: ImageNet Classification with Deep Convolutional Neural Networks
 
+NeurIPS 2012
+
 ## 背景
 
 图像分类比赛：ILSVRC (Image Large-Scale Visual Recognition Challenge).
