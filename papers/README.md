@@ -11,7 +11,7 @@ The table below presents some papers on recent advances of ConvNets in the compu
 |   |  [He et al.](http://arxiv.org/abs/1406.4729)  | - | ×  |
 |   |  [He et al.](https://arxiv.org/abs/1512.03385)  | ResNet | [link](notes/he-resnet.md)  |
 |   |  [Huang et al.](https://arxiv.org/abs/1608.06993) | DenseNet | [link](notes/huang-densenet.md) |
-|   |  [Hu et al.](https://arxiv.org/abs/1709.01507)  | - | × |
+|   |  [Hu et al.](https://arxiv.org/abs/1709.01507)  | SENet | [link](notes/ResNet-Variants.md) |
 |   |  [Zoph et al.](https://arxiv.org/abs/1707.07012) | - | × |
 |  Object detection  |  [Girshick et al.](http://arxiv.org/abs/1311.2524) | R-CNN | [link](notes/rbg-RCNN.md) |
 |   |  [Ren et al.](https://arxiv.org/abs/1506.01497) | - | ×  |

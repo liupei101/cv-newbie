@@ -56,7 +56,7 @@ SENet使用的是一种减少计算量的解耦方法，而SCNet重新思考卷�
 ![Self-Calibrated Convolutions](tools/scnet.png)
 
 个人**愚见**：
-- 网络内部结构越来越复杂，没有像ResNet和SENet那样简约，是不是可以考虑某种**归约的运算**（在不显著减少模型性能情况下）？但是隐约觉得SENet就是这种归约运算（但是解决的着手点不同），这个点需要思考；
+- 网络内部结构越来越复杂，没有像ResNet、DenseNet和SENet那样简约，是不是可以考虑某种**归约的运算**（在不显著减少模型性能情况下）？但是隐约觉得SENet就是这种归约运算（但是解决的着手点不同），这个点需要思考；
 - 这项工作还有一个意义就是：We hope this work could provide future research with a promising way of designing novel convolutional feature transformation for improving convolutional networks；
 
 
