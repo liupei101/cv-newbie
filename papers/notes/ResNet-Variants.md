@@ -22,13 +22,39 @@ RAN（Residual Attention Network）可以使用多个Attention Module堆叠起�
 - Mask branch contains fast feed-forward sweep and top-down feedback steps。前面的feed-forward操作快速地收集了整张图片的全局信息，后面的操作将全局信息和原始特征映射进行结合。这两个步骤展开为自下而上，自上而下，完全卷积的结构。
 - 论文尝试了三种不同的Attention模式，即对Mask Branch输出进行处理的三种不同方法：Mixed Attention （每个通道每个坐标点进行sigmoid运算）、Channel Attention（对每个坐标点沿着通道轴向进行L2正则化，X_{i,j}/||X||）、Spatial Attention（每个通道的特征图先进行标准化处理，然后进行sigmoid运算）。最终的实验结果表明Mixed Attention模式（不添加任何约束，自适应特征）更好。
 
-实验结果：在CIFAR-10和CIFAR-100数据上，均是当前最佳效果。在ImageNet上，得到了和ResNet-200相当的效果，同时仅用了46%的深度和69%的FLOPs。
+实验结果：在CIFAR-10和CIFAR-100数据上，均是当前最佳效果。在ImageNet上，得到了和ResNet-200相当的效果，同时仅用了46%的深度和69%的FLOPs（浮点计算数，衡量模型的计算量、计算复杂度）。
 
 
 ## SENet
 
+Squeeze-and Excitation Block是一个计算单元，它可以在任何转换后进行添加。文章主要考虑了常用的卷积运算带来的影响。一次单个卷积核的卷积运算会将所有通道上的值进行加权然后相加，导致了通道之间的依赖关系隐式地和核捕捉到的空间信息糅合在一起。所以，我们需要把这个通道之间的依赖信息和感受野捕捉到的空间信息进行解耦。本文的目标是对各个通道的信息进行加权，以保证网络对显著的特征更加敏感，而对无用的信息进行抑制。本文通过显式地对通道内部的依赖性进行建模来重新校正卷积之后的输出，步骤包括Squeeze和Excitation。示意图如下：
 
+![A Squeeze-and-Excitation Block](tools/senet-1.png)
+
+**Squeeze: Global Information Embedding**：
+
+首先考虑输出特征中的每个通道。本文对每个通道生成一个Channel Descriptor，它包含了该通道下整个特征映射的全局信息。SENet使用了简单的AVGPooling，一方面运算简便，另一方面没有增加模型参数。
+
+**Excitation: Adaptive Recalibration**：
+
+然后考虑每个通道之间的内部依赖关系，最终得到一个自适应的Channel Weights。Excitation操作其实是在对通道之间的相互依赖关系进行建模，使用两个FC达到这个目的。两个FC中的一个用作瓶颈层，来减少计算量。
+
+ResNet和Inception模型嵌入SE-Block后示意图如下：
+
+![A Squeeze-and-Excitation Block in Inception Module](tools/senet-2.png)
+
+![A Squeeze-and-Excitation Block in ResNet Module](tools/senet-3.png)
+
+实验结果见原文，使用了SE-Block的模型获得了ILSVRC 2017分类任务比赛的冠军。并且，`Significantly reduced the top-5 error to 2.251%, achieving a ∼25% relative improvement over the winning entry of 2016`.
 
 ## SCNet
 
+重新考虑了卷积运算带来的不足：**一次单个卷积核的卷积运算会将所有通道上的值进行加权然后相加，导致了通道之间的依赖关系隐式地和核捕捉到的空间信息糅合在一起**。（SENet原文“Since the output is produced by a summation through all channels, the channel dependencies are implicitly embedded in Vc, but these dependencies are entangled with the spatial correlation captured by the filters.”）
 
+SENet使用的是一种减少计算量的解耦方法，而SCNet重新思考卷积来解决这个问题。示意图如下：
+
+![Self-Calibrated Convolutions](tools/scnet.png)
+
+个人**愚见**：
+- 网络内部结构越来越复杂，没有像ResNet和SENet那样简约，是不是可以考虑某种**归约的运算**（在不显著减少模型性能情况下）？但是隐约觉得SENet就是这种归约运算（但是解决的着手点不同），这个点需要思考；
+- 这项工作还有一个意义就是：We hope this work could provide future research with a promising way of designing novel convolutional feature transformation for improving convolutional networks；
