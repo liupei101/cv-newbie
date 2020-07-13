@@ -43,7 +43,7 @@ class PreActResidualUnit(nn.Module):
         )
 
         self.shortcut = nn.Sequential()
-        if stride != 2 or (in_channels != out_channels):
+        if stride != 1 or (in_channels != out_channels):
             self.shortcut = nn.Conv2d(in_channels, out_channels, 1, stride=stride)
     
     def forward(self, x):
