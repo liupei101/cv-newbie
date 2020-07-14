@@ -18,6 +18,8 @@ RCNN方法和SPPNet方法的模型训练都是多阶段的（CNN，SVM，Boundin
 
 Fast R-CNN架构如下图所示。模型将整张图片和一系列候选目标作为输入。模型首先处理整张图片，经过多层的卷积和池化得到一个特征图。然后，对每个候选目标，一个RoI (region of interest) pooling层可以从得到的特征图中提取固定长度的特征向量。每个特征向量接着经过几个FC层进行处理，然后作为分类器（FC + softmax）和回归器（FC + bbox-regressor）的输入。所以，模型对每个RoI都有两个输出向量：softmax概率（K个类+背景类），每个类的bbox回归偏移值（四个值表示bbox的位置）。
 
+![Fast R-CNN architecture](tools/fast-rcnn.png)
+
 ### RoI pooling layer
 
 RoI定义为一个矩形框界定的感兴趣的目标区域，使用四元组(r, c, j, w)表示。和SPPnet中的处理方式类似，我们把任意尺寸h x w的RoI分为 H x W （固定的值）个格子，然后使用最大池化计算每个格子的响应值，最后得到固定大小的特征输入。不同之处在于，我们仅仅使用了一次固定输出大小的池化(7 x 7)。
