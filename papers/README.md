@@ -14,8 +14,8 @@ The table below presents some papers on recent advances of ConvNets in the compu
 |   |  [Hu et al.](https://arxiv.org/abs/1709.01507)  | SENet | [link](notes/ResNet-Variants.md) |
 |   |  [Zoph et al.](https://arxiv.org/abs/1707.07012) | - | × |
 |  Object detection  |  [Girshick et al.](http://arxiv.org/abs/1311.2524) | R-CNN | [link](notes/rbg-RCNN.md) |
-|   |  [Ren et al.](https://arxiv.org/abs/1506.01497) | Faster RCNN | [link](notes/Fast-Faster-RCNN.md) |
-|   |  [He et al.](https://arxiv.org/abs/1703.06870)  | - | × |
+|   |  [Ren et al.](https://arxiv.org/abs/1506.01497) | Faster R-CNN | [link](notes/Fast-Faster-RCNN.md) |
+|   |  [He et al.](https://arxiv.org/abs/1703.06870)  | Mask R-CNN | [links](notes/Mask-R-CNN.md) |
 |  Image segmentation  |  [Long et al](http://arxiv.org/abs/1411.4038)  | - | ×  |
 |   |  [Noh et al.](https://arxiv.org/abs/1505.04366)  | - | × |
 |   |  [Chen et al.](http://ieeexplore.ieee.org/abstract/document/7913730/)  | - | ×  |
