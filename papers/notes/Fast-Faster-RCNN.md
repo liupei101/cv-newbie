@@ -72,3 +72,59 @@ RoI池化层采取的是最大池化计算。假设输入该层的各个点为x_
 
 Shaoqing Ren, NIPS 2015
 
+读完论文后，还是对整个网络的实现存在诸多困惑，特别是关键的RPN网络的具体实现，所以这里主要从实现的角度来回顾这篇论文。参考文章：https://www.telesens.co/2018/03/11/object-detection-and-classification-using-r-cnns/
+
+下面从四个方面来全面解析Faster R-CNN。
+
+## 图像预处理
+
+在输入网络之前，图像都必须经过预处理。无论是在training还是test时，都需要经过相同的预处理步骤。
+- 读入图片
+- 减去均值（均值是一个3 x 1 的向量，每个数表示**这个通道下所有图片的所有像素点的均值**）
+- 尺度伸缩，且原图的长宽比例保持不变（将图片的短边变换到600，但最大边长不超过1000）
+- 输出预处理后的图片
+
+尺度伸缩部分代码表示如下：
+```python
+def img_rescale(img, targetSize, maxSize):
+	h, w = img.shape
+	minDim = min(h, w)
+	maxDim = max(h, w)
+	scale_ratio = targetSize / minDim
+	if(scale_ratio * maxDim > maxSize) scale_ratio = maxSize / maxDim
+
+	img = rescale_image_by_ratio(img, scale_ratio)
+```
+
+## 网络
+
+R-CNN网络使用神经网络去解决以下两个问题：
+- 鉴别可能的区域（RoIs）
+- 对每个RoI计算其属于每一类的概率
+
+R-CNN有以下三种类型的网络构成：
+- Head
+- Region Proposal Network（RPN）
+- Classification Network
+
+![Faster R-CNN Architecture](tools/faster-r-cnn-1.png)
+
+R-CNNs一般使用预训练的head网络（如VGG16，ResNet50）去计算每张图的特征映射，用于提取图片中一些较为低级的特征。接着这些特征会被输入RPN（由一些卷积网络构成）中，然后产生RoIs。这些RoIs然后会被用来剪切出特征映射中的相应的区域。这个过程被称为"Crop Pooling"。被剪切处的特征区域会传给classification网络，用于对每个RoI进行分类。
+
+## 模型训练
+
+在介绍模型训练的细节之前，首先介绍一下后面不断会用到的概念。
+- Bounding Box Regression Coefficients：R-CNN会产生很接近目标边界的候选框，通过把一个给定的边界框（由top left坐标以及边界框的高宽定义）作为参考，然后使用一系列的"Regression Coefficients"调整它的top left坐标以及高宽。T表示目标框，O表示原始的边界框。回归目标（将原始框转变成目标框的函数的值）如下：t_x = (T_x - O_x) / O_w, t_y = (T_y - O_y) / O_h, t_w = log(T_w / O_w), t_h = log(T_h / O_h)。注意，这样的回归系数的定义可以使得我们很容易地对目标框和原始框的位置进行相互转换。此外，更加重要的是，这样定义的回归系数是不受仿射变换的影响的。这一点对于计算Loss非常有用（因为RoI Pooling层的存在）。
+- IoU = Intersection over Union
+
+模型训练包含以下几个步骤：
+- Anchor Generation Layer：该层用于生成固定数量的Anchors（边界框）。首先会生成9个Anchors（3 scales x 3 aspect ratio一组），然后在整个图像空间上均匀地平移这些Anchors来复制得到新的Anchors。每一组Anchors的中心点（中心区域=16 x 16）相同，对应head网络特征映射图（size=Channels x H/16 x W/16）中的一个位置。这样，我们知道了每个Anchor在原图的坐标，以及经过head网络后它们对应的特征图中的部分。
+- Region Proposal Layer：
+  - RPN：如上图模型架构所示，以head网络得到的输出（size=512 x H/16 x W/16）作为特征映射。然后经过1 x 1的卷积加一些reshape操作生成(H / 16 x W / 16 x 9, 4)的输出，表示每一行代表一个Anchor的边界框回归系数。另外，特征映射又经过1 x 1的卷积 + reshape + softmax 操作生成(H / 16 x W / 16 x 9, 2)的输出，表示每一行代表一个Anchor为正例和为背景的概率。
+  - Proposal Layer：对于每个Anchor，使用其原图坐标及其RPN输出的边界框回归系数，得到其在原图空间中的预测框。然后使用这个Anchor为正例的概率值 + NMS算法对候选框进行剪枝，最终得到m个候选框。
+  - Anchor Target Layer：这一层会计算RPN loss，使得RPN层可以更好地学习如何分辨每个候选框是否属于正例并且输出使其更加接近真实框的校正回归系数。RPN loss的计算可参考论文。
+  - Proposal Target Layer：该层的目的是从Proposal层输出的m个候选框中选择更加精细的候选框（RoIs）。这些精细的RoIs将会被用来从特征图（特征图由head layer产生）中进行Crop Pooling，然后被传入网络剩余的部分来计算预测框的分数和框回归系数。
+- RoI Pooling Layer：对于每个精细的RoI，该层会从head网络产生的卷积特征图中提取这个RoI对应的空间部分。
+- Classification Layer：类似于Fast R-CNN中，经过RoI Pooling后，用于预测最终的边界框和框所属物体类别。同时也会计算损失函数，用来调整网络参数，最终得到更加准确的预测。
+
+
