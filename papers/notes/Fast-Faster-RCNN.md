@@ -118,13 +118,17 @@ R-CNNs一般使用预训练的head网络（如VGG16，ResNet50）去计算每张
 - IoU = Intersection over Union
 
 模型训练包含以下几个步骤：
-- Anchor Generation Layer：该层用于生成固定数量的Anchors（边界框）。首先会生成9个Anchors（3 scales x 3 aspect ratio一组），然后在整个图像空间上均匀地平移这些Anchors来复制得到新的Anchors。每一组Anchors的中心点（中心区域=16 x 16）相同，对应head网络特征映射图（size=Channels x H/16 x W/16）中的一个位置。这样，我们知道了每个Anchor在原图的坐标，以及经过head网络后它们对应的特征图中的部分。
+- Anchor Generation Layer：该层用于生成固定数量的Anchors（边界框）。首先会生成9个Anchors（3 scales x 3 aspect ratio一组），然后在整个图像空间上均匀地平移这些Anchors来复制得到新的Anchors。每一组Anchors的中心点（中心区域=16 x 16）相同，对应head网络特征映射图（size=Channels x H/16 x W/16）中的一个位置。这样，我们知道了每个Anchor在原图的坐标（以x_1, y_1, x_2, y_2的形式）。
 - Region Proposal Layer：
   - RPN：如上图模型架构所示，以head网络得到的输出（size=512 x H/16 x W/16）作为特征映射。然后经过1 x 1的卷积加一些reshape操作生成(H / 16 x W / 16 x 9, 4)的输出，表示每一行代表一个Anchor的边界框回归系数。另外，特征映射又经过1 x 1的卷积 + reshape + softmax 操作生成(H / 16 x W / 16 x 9, 2)的输出，表示每一行代表一个Anchor为正例和为背景的概率。
-  - Proposal Layer：对于每个Anchor，使用其原图坐标及其RPN输出的边界框回归系数，得到其在原图空间中的预测框。然后使用这个Anchor为正例的概率值 + NMS算法对候选框进行剪枝，最终得到m个候选框。
-  - Anchor Target Layer：这一层会计算RPN loss，使得RPN层可以更好地学习如何分辨每个候选框是否属于正例并且输出使其更加接近真实框的校正回归系数。RPN loss的计算可参考论文。
-  - Proposal Target Layer：该层的目的是从Proposal层输出的m个候选框中选择更加精细的候选框（RoIs）。这些精细的RoIs将会被用来从特征图（特征图由head layer产生）中进行Crop Pooling，然后被传入网络剩余的部分来计算预测框的分数和框回归系数。
-- RoI Pooling Layer：对于每个精细的RoI，该层会从head网络产生的卷积特征图中提取这个RoI对应的空间部分。
+  - Proposal Layer：对于每个Anchor，使用其原图坐标及其RPN输出的边界框回归系数，得到其在原图空间中的预测框（记为Proposals）。注意预测框可能会超出原图的边界，所以需要对Proposals坐标进行裁剪。然后对这些Proposals进行筛选（NMS算法剪枝，加一些设定的阈值指标）得到高质量的Proposal，最终得到m个高质量的候选框。
+  - Anchor Target Layer：这一层主要用来得到每个Anchor的label，所以需要结合输入图像的ground-truth bbox信息来计算。除了得到每个Anchor的label，还可以得到每个Anchor的Target Bbox以及权重。简单来说，这一步就是为了得到Y_label。至此，从已有的信息，已经可以计算RPN网络的损失函数了。这样可以使得RPN网络输出的每个Anchor移动后的cls和bbox更加符合实际情况（当然，低质量的Anchors不会参与到RPN目标函数的计算中）。
+  - Proposal Target Layer：该层的目的是从Proposal层输出的m个高质量的候选框中选择（会结合前面RPN网络输出的cls和bbox预测信息）更加精细的候选框（RoIs），同时对精细的RoIs进行mini-Batch采样。这些采样的mini-Batch RoIs会被输入到RoI Pooling Layer中，至此结束RPN的任务。
+- RoI Pooling Layer：对于每个精细的RoI，该层会从head网络产生的卷积特征图中提取这个RoI对应的空间部分。可以使用torchvision.ops.ROIPool接口。
 - Classification Layer：类似于Fast R-CNN中，经过RoI Pooling后，用于预测最终的边界框和框所属物体类别。同时也会计算损失函数，用来调整网络参数，最终得到更加准确的预测。
 
+整个Faster R-CNN的实现有非常多细节和技巧：所有Anchor的生成、对Anchor打标签、筛选Proposal、RoI采样等等。
 
+参考代码：https://github.com/ruotianluo/pytorch-faster-rcnn
+
+**更加推荐的官方的参考代码**：[Mask R-CNN](https://github.com/facebookresearch/maskrcnn-benchmark)，包含有Faster R-CNN的实现。
